@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #3a0ca3, #7209b7, #f72585);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #fff;
+}
+
+/* Fondo animado igual que en el register */
+body::before {
+    content: "";
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    top: -100%;
+    left: -100%;
+    background: conic-gradient(from 0deg, #7209b7, #f72585, #4361ee, #7209b7);
+    animation: rotateGradient 20s linear infinite;
+    z-index: 0;
+    filter: blur(120px);
+    opacity: 0.5;
+}
+
+@keyframes rotateGradient {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Contenedor del login */
+.login-container {
+    position: relative;
+    z-index: 1;
+    width: 400px;
+    padding: 45px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.3);
+    text-align: center;
+    transition: 0.5s ease;
+}
+
+.login-container:hover {
+    transform: translateY(-6px);
+}
+
+/* Título */
+.login-container h1 {
+    font-size: 2em;
+    margin-bottom: 25px;
+    color: #fff;
+    text-shadow: 0 0 15px #f72585, 0 0 25px #7209b7;
+}
+
+/* Inputs */
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 18px;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-size: 1em;
+    transition: 0.3s;
+}
+
+.login-container input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.login-container input:focus {
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 15px #f72585;
+    transform: scale(1.03);
+}
+
+/* Botón */
+.login-container button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #f72585, #7209b7);
+    color: #fff;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.login-container button:hover {
+    background: linear-gradient(90deg, #7209b7, #f72585);
+    box-shadow: 0 0 25px rgba(247, 37, 133, 0.8);
+    transform: scale(1.05);
+}
+
+/* Mensaje de error */
+.error {
+    color: #ff4dff;
+    font-weight: 600;
+    margin-bottom: 15px;
+    background: rgba(255, 0, 255, 0.15);
+    padding: 8px;
+    border-radius: 8px;
+    text-shadow: 0 0 5px rgba(255, 0, 255, 0.4);
+}
+
+/* Enlace al registro */
+.login-container p {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.login-container a {
+    color: #ff82e9;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.login-container a:hover {
+    text-shadow: 0 0 10px #ff82e9;
+}
+
+/* Luces decorativas animadas */
+.pulse {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: floatPulse 7s ease-in-out infinite;
+}
+
+.pulse:nth-child(1) {
+    background: #f72585;
+    top: -40px;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.pulse:nth-child(2) {
+    background: #7209b7;
+    bottom: -60px;
+    right: -50px;
+    animation-delay: 3.5s;
+}
+
+@keyframes floatPulse {
+    0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+    50% { transform: translate(25px, 25px); opacity: 0.9; }
+}
