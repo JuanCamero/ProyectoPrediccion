@@ -7,21 +7,20 @@
 </head>
 <body>
     <div class="login-container">
-        <h1>Iniciar sesión</h1>
-
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
-
-        <form method="POST" action="/login">
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Ingresar</button>
+        <h2>Iniciar Sesión</h2>
+        <form method="POST">
+            <input type="email" name="correo" placeholder="Correo electrónico" required>
+            <input type="password" name="contraseña" placeholder="Contraseña" required>
+            <button type="submit">Entrar</button>
         </form>
-
-        <p>¿No tienes una cuenta? 
-            <a href="{{ url_for('register') }}">Regístrate aquí</a>
-        </p>
+        <p>¿No tienes una cuenta? <a href="{{ url_for('registro') }}">Regístrate aquí</a></p>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
     </div>
 </body>
 </html>
+
+
