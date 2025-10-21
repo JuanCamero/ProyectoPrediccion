@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing import image
 from datetime import datetime
 import numpy as np
 import os
+import uuid  # Para generar nombres únicos
 
 # --------------------------------------
 # 🔧 Configuración base de la aplicación
@@ -134,7 +135,8 @@ def panel():
         return redirect(url_for('login'))
 
     usuario = Usuario.query.get(session['usuario_id'])
-    archivos = Archivo.query.order_by(Archivo.fecha_subida.desc()).all()
+    # 🔹 Solo traer archivos del usuario actual
+    archivos = Archivo.query.filter_by(usuario_id=usuario.id).order_by(Archivo.fecha_subida.desc()).all()
     prediccion = None
     imagen_path = None
 
@@ -148,7 +150,9 @@ def panel():
             flash("No seleccionaste ninguna imagen")
             return redirect(url_for('panel'))
 
-        ruta = os.path.join(app.config['UPLOAD_FOLDER'], archivo_subido.filename)
+        # 🔹 Generar un nombre único para evitar sobreescritura
+        nombre_unico = f"{uuid.uuid4().hex}_{archivo_subido.filename}"
+        ruta = os.path.join(app.config['UPLOAD_FOLDER'], nombre_unico)
         archivo_subido.save(ruta)
 
         # Predicción con el modelo
@@ -157,11 +161,11 @@ def panel():
         img_array = np.expand_dims(img_array, axis=0)
         pred = model.predict(img_array)[0][0]
         prediccion = "Tumor detectado" if pred > 0.5 else "No se detecta tumor"
-        imagen_path = f"/static/uploads/{archivo_subido.filename}"
+        imagen_path = f"/static/uploads/{nombre_unico}"
 
         # Guardar en DB
         nuevo_archivo = Archivo(
-            nombre_archivo=archivo_subido.filename,
+            nombre_archivo=nombre_unico,
             ruta=ruta,
             prediccion=prediccion,
             usuario_id=usuario.id
@@ -182,4 +186,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
