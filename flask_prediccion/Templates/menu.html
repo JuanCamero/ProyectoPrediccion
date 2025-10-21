@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú principal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+</head>
+<body>
+    <div class="menu-container">
+        <h1>Bienvenido, {{ usuario.nombre }} </h1>
+        <h2>Selecciona una opción:</h2>
+
+        <div class="menu-options">
+            <a href="{{ url_for('panel') }}" class="menu-btn"> Modelo de Predicción de tumores cerebrales</a>
+            <a href="{{ url_for('fase1') }}" class="menu-btn">Fase 1</a>
+            <a href="{{ url_for('fase2') }}" class="menu-btn">Fase 2</a>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="logout">Cerrar sesión</a>
+    </div>
+</body>
+</html>

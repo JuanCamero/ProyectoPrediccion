@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fase 1 - CRISP-ML</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f4f8fb; font-family: "Segoe UI", sans-serif; }
+    h1, h2 { color: #0d3b66; }
+    .card { border-left: 6px solid #1d7a8c; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .card-title { color: #0d3b66; font-weight: 600; }
+    .section-title { text-align: center; margin-bottom: 40px; }
+    ul { padding-left: 20px; }
+    .back-link { display: inline-block; margin-top: 30px; color: #1d7a8c; text-decoration: none; font-weight: 600; }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="section-title">
+      <h1>Fase 1 - Entendimiento del Negocio y los Datos</h1>
+      <p class="text-muted">Comprensión del contexto clínico y técnico del modelo predictivo de tumores cerebrales</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Objetivos de negocio -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Objetivos de Negocio</h5>
+          <ul>
+            <li>Desarrollar una plataforma web médica que permita la carga de imágenes de resonancia magnética (RM).</li>
+            <li>Implementar un modelo de aprendizaje profundo (CNN) capaz de:
+              <ul>
+                <li>Detectar si el tumor está presente.</li>
+                <li>Clasificarlo como <strong>benigno o maligno</strong>.</li>
+                <li>Estimar su <strong>tamaño aproximado</strong> en la imagen procesada.</li>
+              </ul>
+            </li>
+            <li>Proporcionar un panel de resultados con porcentajes de probabilidad y métricas de confianza del modelo.</li>
+            <li>Registrar en la base de datos cada predicción, usuario, fecha y resultado, asegurando trazabilidad médica.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Metas técnicas -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Metas Técnicas</h5>
+          <ul>
+            <li>Desarrollar un sistema de autenticación médica seguro (roles: paciente, médico, investigador).</li>
+            <li>Diseñar una base de datos PostgreSQL que relacione pacientes, imágenes, resultados y fechas.</li>
+            <li>Usar CNN (Convolutional Neural Networks) optimizadas con TensorFlow/Keras.</li>
+            <li>Permitir la integración de reportes automáticos con porcentajes y tamaño del tumor detectado.</li>
+            <li>Adoptar un flujo ML-Ops con control de versiones, documentación y monitoreo continuo.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Preguntas clave -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Preguntas Clave</h5>
+          <ul>
+            <li>¿La imagen médica contiene un tumor cerebral detectable?</li>
+            <li>¿El tumor identificado es benigno o maligno?</li>
+            <li>¿Cuál es el tamaño aproximado del tumor en milímetros o proporción de la imagen?</li>
+            <li>¿Con qué nivel de confianza el modelo realiza la predicción?</li>
+            <li>¿Cómo se registra y valida la información en la base de datos médica?</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Evaluación de datos -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Evaluación de Datos</h5>
+          <ul>
+            <li><strong>Tipo de datos:</strong> Imágenes médicas (JPG, PNG, DICOM).</li>
+            <li><strong>Calidad:</strong> Imágenes nítidas, con contraste adecuado y sin ruido visual.</li>
+            <li><strong>Etiquetado:</strong> Las imágenes deben tener etiquetas clínicas (tumor benigno/maligno, medidas).</li>
+            <li><strong>Relevancia:</strong> Cada imagen debe contribuir al entrenamiento de la CNN para precisión diagnóstica.</li>
+            <li><strong>Volumen:</strong> Se requiere un dataset balanceado con más de 5,000 imágenes.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Viabilidad -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Análisis de Viabilidad</h5>
+          <ul>
+            <li><strong>Técnica:</strong> Se utilizará GPU para entrenamiento (NVIDIA CUDA) y CPU optimizada para predicción web.</li>
+            <li><strong>Organizacional:</strong> El personal médico requiere capacitación básica para uso del sistema.</li>
+            <li><strong>Legal y ética:</strong> Cumplimiento de estándares HIPAA, RGPD y consentimiento informado.</li>
+            <li><strong>Riesgos:</strong> Errores en etiquetado, sesgos del modelo y pérdida de datos por fallos de carga.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Documentación -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Documentación y Estándares</h5>
+          <ul>
+            <li>Registro de cada versión del modelo en GitHub.</li>
+            <li>Bitácora de entrenamiento y validación (datasets, precisión, pérdida, matriz de confusión).</li>
+            <li>Logs automáticos de carga de imágenes y resultados de predicción.</li>
+            <li>Aplicación de la metodología <strong>CRISP-ML</strong> para garantizar reproducibilidad y trazabilidad.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="{{ url_for('menu') }}" class="back-link">⬅ Volver al menú</a>
+    </div>
+  </div>
+</body>
+</html>
+
+
