@@ -9,7 +9,7 @@ import os
 import uuid  # Para generar nombres únicos
 
 # --------------------------------------
-# 🔧 Configuración base de la aplicación
+#  Configuración base de la aplicación
 # --------------------------------------
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
