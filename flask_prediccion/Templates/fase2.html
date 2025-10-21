@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fase 2 - Ingeniería de Datos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f4f8fb; font-family: "Segoe UI", sans-serif; }
+    h1, h2 { color: #0d3b66; }
+    .card { border-left: 6px solid #4a90e2; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .card-title { color: #0d3b66; font-weight: 600; }
+    ul { padding-left: 20px; }
+    .section-title { text-align: center; margin-bottom: 40px; }
+    .back-link { display: inline-block; margin-top: 30px; color: #1d7a8c; text-decoration: none; font-weight: 600; }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="section-title">
+      <h1>Fase 2 - Ingeniería de Datos</h1>
+      <p class="text-muted">Preparación, limpieza y transformación de datos médicos para modelado predictivo</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Selección -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Selección de Datos</h5>
+          <ul>
+            <li>Fuente: Imágenes cargadas por los usuarios (pacientes y médicos).</li>
+            <li>Tipos admitidos: .jpg, .png y .dcm (formato DICOM hospitalario).</li>
+            <li>Variables clave: nombre_archivo, ruta, fecha_subida, usuario_id, prediccion, tamaño_estimado.</li>
+            <li>Se excluyen imágenes borrosas o sin contraste cerebral adecuado.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Limpieza -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Limpieza y Validación</h5>
+          <ul>
+            <li>Validación de extensión y estructura del archivo.</li>
+            <li>Verificación de integridad mediante hash (SHA-256).</li>
+            <li>Eliminación de duplicados en el servidor y PostgreSQL.</li>
+            <li>Normalización de nombres: <code>pacienteID_fecha_Fase2.ext</code>.</li>
+            <li>Eliminación de imágenes corruptas o vacías.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Transformación -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Transformación de Datos</h5>
+          <ul>
+            <li>Redimensionamiento: Todas las imágenes a (150,150) píxeles.</li>
+            <li>Normalización: Escalado de valores de píxel /255.0.</li>
+            <li>Conversión a matrices NumPy para TensorFlow/Keras.</li>
+            <li>Generación de etiquetas categóricas (Benigno=0, Maligno=1).</li>
+            <li>Creación de campo adicional para <strong>tamaño_estimado_tumor (mm³)</strong> calculado mediante segmentación de áreas.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Almacenamiento -->
+      <div class="col-md-6">
+        <div class="card p-4 h-100">
+          <h5 class="card-title">Almacenamiento y Registro</h5>
+          <ul>
+            <li>Base de datos PostgreSQL con las tablas:
+              <ul>
+                <li><code>usuarios</code>  información de acceso.</li>
+                <li><code>imagenes</code>  ruta, tipo, tamaño, fase.</li>
+                <li><code>predicciones</code>  resultado (benigno/maligno), porcentaje y tamaño del tumor.</li>
+              </ul>
+            </li>
+            <li>Asociación entre cada imagen y el usuario correspondiente.</li>
+            <li>Registro automático de la fecha y hora de predicción.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Documentación -->
+      <div class="col-md-12">
+        <div class="card p-4">
+          <h5 class="card-title">Documentación y Buenas Prácticas (ML-Ops)</h5>
+          <ul>
+            <li>Cada transformación se documenta en el repositorio del proyecto con comentarios de código y README técnico.</li>
+            <li>Registro de versiones del modelo y scripts de preprocesamiento.</li>
+            <li>Uso de bitácoras automáticas (logs) para auditoría médica y seguimiento de errores.</li>
+            <li>Validación del modelo antes del despliegue: precisión, sensibilidad y especificidad superiores al 90%.</li>
+            <li>Reportes clínicos exportables con:
+              <ul>
+                <li>Porcentaje de benignidad o malignidad.</li>
+                <li>Tamaño estimado del tumor.</li>
+                <li>Confianza de predicción (probabilidad softmax).</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="{{ url_for('menu') }}" class="back-link">⬅ Volver al menú</a>
+    </div>
+  </div>
+</body>
+</html>
