@@ -6,19 +6,23 @@ from tensorflow.keras.preprocessing import image
 from datetime import datetime
 import numpy as np
 import os
-import uuid  # Para generar nombres únicos
+import uuid
 
 # --------------------------------------
-#  Configuración base de la aplicación
+# 🔹 Configuración base de la aplicación
 # --------------------------------------
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
 
 # --------------------------------------
-# 🔹 Configuración de base de datos PostgreSQL
+# 🔹 Configuración de base de datos (local o Render)
 # --------------------------------------
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:12345@localhost:5432/predicciondb'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Si Render provee DATABASE_URL, se usa esa; si no, se conecta al pgAdmin local
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL",  # Render
+    "postgresql://postgres:12345@localhost:5432/predicciondb"  # Local
+)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # --------------------------------------
@@ -43,7 +47,11 @@ class Archivo(db.Model):
 # 🔹 Cargar modelo de predicción
 # --------------------------------------
 MODEL_PATH = "flask_prediccion/models/modelo_tumor.h5"
-model = load_model(MODEL_PATH)
+if os.path.exists(MODEL_PATH):
+    model = load_model(MODEL_PATH)
+else:
+    model = None
+    print("⚠ Modelo no encontrado en la ruta especificada")
 
 # --------------------------------------
 # 🔹 Configuración de archivos subidos
@@ -135,7 +143,6 @@ def panel():
         return redirect(url_for('login'))
 
     usuario = Usuario.query.get(session['usuario_id'])
-    # 🔹 Solo traer archivos del usuario actual
     archivos = Archivo.query.filter_by(usuario_id=usuario.id).order_by(Archivo.fecha_subida.desc()).all()
     prediccion = None
     imagen_path = None
@@ -150,20 +157,22 @@ def panel():
             flash("No seleccionaste ninguna imagen")
             return redirect(url_for('panel'))
 
-        # 🔹 Generar un nombre único para evitar sobreescritura
         nombre_unico = f"{uuid.uuid4().hex}_{archivo_subido.filename}"
         ruta = os.path.join(app.config['UPLOAD_FOLDER'], nombre_unico)
         archivo_subido.save(ruta)
 
-        # Predicción con el modelo
-        img = image.load_img(ruta, target_size=(150, 150))
-        img_array = image.img_to_array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
-        pred = model.predict(img_array)[0][0]
-        prediccion = "Tumor detectado" if pred > 0.5 else "No se detecta tumor"
+        # Predicción
+        if model:
+            img = image.load_img(ruta, target_size=(150, 150))
+            img_array = image.img_to_array(img) / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
+            pred = model.predict(img_array)[0][0]
+            prediccion = "Tumor detectado" if pred > 0.5 else "No se detecta tumor"
+        else:
+            prediccion = "Modelo no disponible"
+
         imagen_path = f"/static/uploads/{nombre_unico}"
 
-        # Guardar en DB
         nuevo_archivo = Archivo(
             nombre_archivo=nombre_unico,
             ruta=ruta,
