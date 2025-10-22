@@ -1,22 +1,15 @@
 services:
   - type: web
-    name: proyecto-prediccion-tumor
+    name: prediccion-tumor
     env: python
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
 
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10
-      - key: FLASK_ENV
-        value: production
-      - key: FLASK_DEBUG
-        value: 0
-      - key: MODEL_PATH
-        value: models/modelo_tumor.h5
-      - key: SECRET_KEY
-        value: clave_super_segura_2025
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: prediccion-tumor-db
+          property: connectionString
+databases:
+  - name: prediccion-tumor-db
    

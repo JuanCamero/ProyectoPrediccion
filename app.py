@@ -17,11 +17,13 @@ app.secret_key = 'clave_secreta_segura'
 # --------------------------------------
 # 🔹 Configuración de base de datos (local o Render)
 # --------------------------------------
-# Si Render provee DATABASE_URL, se usa esa; si no, se conecta al pgAdmin local
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL",  # Render
-    "postgresql://postgres:12345@localhost:5432/predicciondb"  # Local
+    "DATABASE_URL",  # variable de entorno en Render
+    "postgresql://postgres:12345@localhost:5432/predicciondb"  # fallback local
 )
+
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -46,7 +48,7 @@ class Archivo(db.Model):
 # --------------------------------------
 # 🔹 Cargar modelo de predicción
 # --------------------------------------
-MODEL_PATH = "flask_prediccion/models/modelo_tumor.h5"
+MODEL_PATH = "models/modelo_tumor.h5"
 if os.path.exists(MODEL_PATH):
     model = load_model(MODEL_PATH)
 else:
