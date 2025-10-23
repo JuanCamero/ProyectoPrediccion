@@ -2,8 +2,10 @@ services:
   - type: web
     name: prediccion-tumor
     env: python
+    pythonVersion: 3.12
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
+   
 
     envVars:
       - key: DATABASE_URL
