@@ -8,9 +8,10 @@ import numpy as np
 import os
 import uuid
 import gdown
+import tensorflow as tf
+import gc  # 🧹 Para liberar memoria después de predicciones
 
 # 🔧 Forzar uso de CPU (Render fix)
-import tensorflow as tf
 tf.config.set_visible_devices([], 'GPU')
 
 # --------------------------------------
@@ -20,7 +21,7 @@ app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
 
 # --------------------------------------
-# 🔹 Configuración de base de datos (local o Render)
+# 🔹 Configuración de base de datos
 # --------------------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL",  # variable de entorno en Render
@@ -48,13 +49,12 @@ class Archivo(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
 
 # --------------------------------------
-# 🔹 Cargar modelo de predicción desde Google Drive
+# 🔹 Cargar modelo desde Google Drive
 # --------------------------------------
 MODEL_PATH = "models/modelo_tumor.h5"
 GOOGLE_DRIVE_ID = "1M1cg6rWagoNqJFl-0mFOzrazUCuU2PLz"
 GDRIVE_URL = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_ID}"
 
-# Crear carpeta 'models' si no existe
 os.makedirs("models", exist_ok=True)
 
 # Descargar el modelo si no existe localmente
@@ -62,13 +62,34 @@ if not os.path.exists(MODEL_PATH):
     print("📥 Descargando modelo desde Google Drive...")
     gdown.download(GDRIVE_URL, MODEL_PATH, quiet=False)
 
-# Cargar el modelo
-if os.path.exists(MODEL_PATH):
-    model = load_model(MODEL_PATH)
-    print("✅ Modelo cargado correctamente")
-else:
-    model = None
-    print("⚠ Modelo no encontrado en la ruta especificada")
+# --------------------------------------
+# 🔹 Funciones de carga y predicción del modelo
+# --------------------------------------
+_model = None  # Carga perezosa
+
+def cargar_modelo():
+    global _model
+    if _model is None:
+        print("⚙️ Cargando modelo en memoria...")
+        _model = load_model(MODEL_PATH)
+        print("✅ Modelo cargado correctamente")
+    return _model
+
+def predecir_imagen(ruta_imagen):
+    """Realiza predicción y libera memoria después"""
+    model = cargar_modelo()
+    img = image.load_img(ruta_imagen, target_size=(150, 150))
+    img_array = image.img_to_array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+
+    pred = model.predict(img_array)[0][0]
+    resultado = "Tumor detectado" if pred > 0.5 else "No se detecta tumor"
+
+    # 🧹 Liberar memoria
+    tf.keras.backend.clear_session()
+    gc.collect()
+
+    return resultado
 
 # --------------------------------------
 # 🔹 Configuración de archivos subidos
@@ -124,7 +145,7 @@ def logout():
     flash('Sesión cerrada correctamente.')
     return redirect(url_for('login'))
 
-# ------------------ MENÚ INTERMEDIO ------------------
+# ------------------ MENÚ ------------------
 @app.route('/menu')
 def menu():
     if 'usuario_id' not in session:
@@ -146,7 +167,7 @@ def fase2():
         return redirect(url_for('login'))
     return render_template('fase2.html')
 
-# ------------------ PANEL / MODELO ------------------
+# ------------------ PANEL ------------------
 @app.route('/panel', methods=['GET', 'POST'])
 def panel():
     if 'usuario_id' not in session:
@@ -170,13 +191,9 @@ def panel():
         ruta = os.path.join(app.config['UPLOAD_FOLDER'], nombre_unico)
         archivo_subido.save(ruta)
 
-        # Predicción
-        if model:
-            img = image.load_img(ruta, target_size=(150, 150))
-            img_array = image.img_to_array(img) / 255.0
-            img_array = np.expand_dims(img_array, axis=0)
-            pred = model.predict(img_array)[0][0]
-            prediccion = "Tumor detectado" if pred > 0.5 else "No se detecta tumor"
+        # 🔍 Realizar predicción
+        if os.path.exists(MODEL_PATH):
+            prediccion = predecir_imagen(ruta)
         else:
             prediccion = "Modelo no disponible"
 
@@ -204,3 +221,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
