@@ -1,0 +1,177 @@
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #f4f6f9, #e0ebff);
+    min-height: 100vh;
+}
+
+/* NAVBAR */
+.navbar {
+    background: linear-gradient(90deg, #2575fc, #e9e7ec);
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.navbar h2 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+/* BOTÓN CERRAR SESIÓN */
+.logout-btn {
+    background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 6px 15px rgba(255,77,77,0.4);
+    transition: 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(45deg, #cc0000, #ff3333);
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(255,77,77,0.5);
+}
+
+/* CONTENIDO */
+.content {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+}
+
+.content h3 {
+    margin-top: 20px;
+    color: #333;
+    font-weight: 600;
+    text-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* FORMULARIO */
+.content form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    align-items: center;
+}
+
+.content input[type="file"] {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+.content input[type="file"]:hover, 
+.content input[type="file"]:focus {
+    border-color: #6a11cb;
+    box-shadow: 0 0 12px rgba(106,17,203,0.3);
+}
+
+/* BOTÓN SUBMIT */
+.content button {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(45deg, #2574fcbc, #dedae1);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(37,117,252,0.3);
+    transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.content button:hover {
+    background: linear-gradient(45deg, #1177cb, #fefefe);
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(37,117,252,0.4);
+}
+
+/* LISTA DE ARCHIVOS */
+.file-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.file-list li {
+    padding: 15px 18px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.file-list li:hover {
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.file-list li a {
+    text-decoration: none;
+    color: #2575fc;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.file-list li a:hover {
+    color: #6a11cb;
+    text-decoration: underline;
+}
+
+/* RESULTADO DE PREDICCIÓN */
+.prediction-result {
+    margin-top: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(90deg, #e6f0ff, #d0d9ff);
+    border-left: 6px solid #2575fc;
+    font-weight: bold;
+    border-radius: 12px;
+    animation: fadeIn 0.5s ease;
+    box-shadow: 0 6px 20px rgba(37,117,252,0.2);
+}
+
+/* INFORMACIÓN DEL ARCHIVO */
+.file-info {
+    font-size: 13px;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-5px);}
+    to {opacity: 1; transform: translateY(0);}
+}

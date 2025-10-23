@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(-45deg, #f9f6f7d3, #02a2fe9c);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.register-container {
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(15px) saturate(180%);
+    border-radius: 15px;
+    padding: 40px 50px;
+    width: 360px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-container:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+}
+
+.register-container h2 {
+    margin-bottom: 30px;
+    color: #0d3b66;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.register-container input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-container input:focus {
+    border-color: #ff7eb3;
+    box-shadow: 0 0 8px rgba(255,126,179,0.5);
+    outline: none;
+}
+
+.register-container button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 10px;
+    background: #1d7a8c;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.register-container button:hover {
+    background: #14565c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(20,86,92,0.4);
+}
+
+.register-container a {
+    color: #1d7a8c;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.register-container a:hover {
+    color: #14565c;
+    text-decoration: underline;
+}
+
+.alert {
+    background-color: #fdecea;
+    border-left: 5px solid #c62828;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+    animation: fadeIn 0.5s ease;
+}

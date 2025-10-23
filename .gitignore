@@ -1,0 +1,20 @@
+# Datos de entrenamiento y procesamiento
+data/raw/
+data/processed/
+
+# Caché de Python
+__pycache__/
+
+# Checkpoints de modelos
+*.ckpt
+*.h5  
+
+# Logs de entrenamiento
+logs/
+
+# Archivos temporales del sistema o editor
+*.pyc
+*.pyo
+*.swp
+.DS_Store
+Thumbs.db   

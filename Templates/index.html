@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Principal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .resultado-tumor { color: red; font-weight: bold; }
+        .resultado-no-tumor { color: green; font-weight: bold; }
+        .file-list { list-style: none; padding: 0; }
+        .file-list li { margin-bottom: 8px; }
+        img { max-width: 300px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Bienvenido, {{ usuario.nombre }}</h2>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Cerrar sesión</a>
+    </div>
+
+    <div class="content">
+        <h3>Sube tu archivo</h3>
+        <form action="{{ url_for('panel') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="archivo" required>
+            <button type="submit">Subir</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        {% if prediccion %}
+            <h3>Resultado de la predicción</h3>
+            <p class="{{ 'resultado-tumor' if prediccion=='Tumor detectado' else 'resultado-no-tumor' }}">
+                {{ prediccion }}
+            </p>
+            {% if image_path %}
+                <img src="{{ image_path }}" alt="Imagen subida">
+            {% endif %}
+        {% endif %}
+
+        <h3>Historial de archivos</h3>
+        {% if archivos %}
+            <ul class="file-list">
+                {% for archivo in archivos %}
+                    <li>
+                        <strong>{{ archivo.nombre_archivo }}</strong>
+                        subido por <strong>{{ archivo.usuario.nombre }}</strong>
+                        el {{ archivo.fecha_subida.strftime('%d/%m/%Y %H:%M') }}
+                        - <strong>{{ archivo.prediccion }}</strong>
+                        - <a href="{{ url_for('static', filename='uploads/' + archivo.nombre_archivo) }}" target="_blank">Ver</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay archivos subidos todavía.</p>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+    <a href="{{ url_for('menu') }}" class="menu-btn">⬅ Volver al menú</a>
+</div>
+    </div>
+</body>
+</html>
