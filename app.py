@@ -7,7 +7,11 @@ from datetime import datetime
 import numpy as np
 import os
 import uuid
-import gdown  # Para descargar el modelo desde Google Drive
+import gdown
+
+# 🔧 Forzar uso de CPU (Render fix)
+import tensorflow as tf
+tf.config.set_visible_devices([], 'GPU')
 
 # --------------------------------------
 # 🔹 Configuración base de la aplicación
@@ -53,37 +57,18 @@ GDRIVE_URL = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_ID}"
 # Crear carpeta 'models' si no existe
 os.makedirs("models", exist_ok=True)
 
-def descargar_modelo():
-    """Descarga el modelo desde Google Drive si no existe o falla."""
-    try:
-        print("📥 Descargando modelo desde Google Drive...")
-        gdown.download(GDRIVE_URL, MODEL_PATH, quiet=False)
-        if os.path.exists(MODEL_PATH):
-            print("✅ Modelo descargado correctamente.")
-            return True
-        else:
-            print("⚠ No se pudo guardar el modelo tras la descarga.")
-            return False
-    except Exception as e:
-        print(f"❌ Error al descargar el modelo: {e}")
-        return False
-
 # Descargar el modelo si no existe localmente
 if not os.path.exists(MODEL_PATH):
-    if not descargar_modelo():
-        print("⚠ No se pudo descargar el modelo automáticamente.")
+    print("📥 Descargando modelo desde Google Drive...")
+    gdown.download(GDRIVE_URL, MODEL_PATH, quiet=False)
 
 # Cargar el modelo
-try:
-    if os.path.exists(MODEL_PATH):
-        model = load_model(MODEL_PATH)
-        print("✅ Modelo cargado correctamente")
-    else:
-        model = None
-        print("⚠ Modelo no encontrado en la ruta especificada")
-except Exception as e:
-    print(f"❌ Error al cargar el modelo: {e}")
+if os.path.exists(MODEL_PATH):
+    model = load_model(MODEL_PATH)
+    print("✅ Modelo cargado correctamente")
+else:
     model = None
+    print("⚠ Modelo no encontrado en la ruta especificada")
 
 # --------------------------------------
 # 🔹 Configuración de archivos subidos
