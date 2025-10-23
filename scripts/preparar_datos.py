@@ -6,32 +6,46 @@ from sklearn.model_selection import train_test_split
 # Crear carpeta processed si no existe
 os.makedirs("data/processed", exist_ok=True)
 
-# Cargar imágenes
-data_dir = "data/raw/brain_tumor_dataset"
-categories = ["yes", "no"]
 
+# Directorio donde están tus datos
+data_dir = "data/raw/Training"
+
+# Clases del dataset
+categories = ["glioma", "meningioma", "notumor", "pituitary"]
+
+IMG_SIZE = 150
 X = []
 y = []
 
+# Cargar las imágenes de cada clase
 for category in categories:
     path = os.path.join(data_dir, category)
-    label = 1 if category == "yes" else 0
+    label = categories.index(category)  # glioma=0, meningioma=1, notumor=2, pituitary=3
 
+    print(f"Cargando imágenes de: {category}...")
     for img_name in os.listdir(path):
         img_path = os.path.join(path, img_name)
-        img = cv2.imread(img_path)
-        if img is not None:
-            img = cv2.resize(img, (150, 150))
-            X.append(img)
-            y.append(label)
+        try:
+            img = cv2.imread(img_path)
+            if img is not None:
+                img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+                X.append(img)
+                y.append(label)
+        except Exception as e:
+            print(f"Error con la imagen {img_name}: {e}")
+
 
 X = np.array(X) / 255.0
 y = np.array(y)
 
-print("Total de imágenes cargadas:", len(X))
 
-# Dividir datos
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print("✅ Total de imágenes cargadas:", len(X))
+
+# Dividir datos (80% entrenamiento, 20% prueba)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
 
 # Guardar datos procesados
 np.save("data/processed/X_train.npy", X_train)

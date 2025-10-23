@@ -34,9 +34,9 @@ loss, acc = model.evaluate(X_test, y_test)
 print(f"✅ Precisión del modelo: {acc:.2f}")
 
 # Crear carpeta de salida si no existe
-os.makedirs("flask_prediccion/models", exist_ok=True)
+os.makedirs("models", exist_ok=True)
 
 # Guardar el modelo (solo en formato .h5)
-model.save("flask_prediccion/models/modelo_tumor.h5")
+model.save("models/modelo_tumor.h5")
 
-print("✅ Modelo entrenado y guardado correctamente en flask_prediccion/models/modelo_tumor.h5")
+print("✅ Modelo entrenado y guardado correctamente en models/modelo_tumor.h5")
