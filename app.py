@@ -49,17 +49,24 @@ class Archivo(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
 
 # --------------------------------------
-# 🔹 Cargar modelo (Google Drive)
+# 🔹 Cargar modelo (Google Drive actualizado)
 # --------------------------------------
 MODEL_PATH = "models/modelo_tumor.h5"
-GOOGLE_DRIVE_ID = "1M1cg6rWagoNqJFl-0mFOzrazUCuU2PLz"
+
+# 🆕 Nuevo ID de tu modelo en Google Drive
+GOOGLE_DRIVE_ID = "1z1dYPd8cCyBDZkZEwAcdRnHdcB9gLM7j"
 GDRIVE_URL = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_ID}"
 
 os.makedirs("models", exist_ok=True)
 
-if not os.path.exists(MODEL_PATH):
-    print("📥 Descargando modelo desde Google Drive...")
-    gdown.download(GDRIVE_URL, MODEL_PATH, quiet=False)
+# ✅ Forzar descarga si no existe o el archivo está corrupto
+if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 10000:
+    print("📥 Descargando modelo actualizado desde Google Drive...")
+    try:
+        gdown.download(GDRIVE_URL, MODEL_PATH, quiet=False)
+        print("✅ Modelo descargado correctamente.")
+    except Exception as e:
+        print(f"⚠️ Error al descargar modelo: {e}")
 
 # --------------------------------------
 # 🔹 Carga y predicción del modelo
@@ -75,13 +82,16 @@ def cargar_modelo():
         print("✅ Modelo cargado correctamente")
     return _model
 
+
 def predecir_imagen(ruta_imagen):
     """Predice tipo de tumor entre 4 clases"""
     model = cargar_modelo()
+
     img = image.load_img(ruta_imagen, target_size=(150, 150))
     img_array = image.img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
+    # 🔍 Predicción
     pred = model.predict(img_array)[0]
     clase_idx = np.argmax(pred)
     confianza = float(np.max(pred) * 100)
@@ -216,5 +226,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
-
