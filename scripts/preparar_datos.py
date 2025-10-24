@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 # Crear carpeta processed si no existe
 os.makedirs("data/processed", exist_ok=True)
 
-
 # Directorio donde están tus datos
 data_dir = "data/raw/Training"
 
@@ -34,23 +33,17 @@ for category in categories:
         except Exception as e:
             print(f"Error con la imagen {img_name}: {e}")
 
-
 X = np.array(X) / 255.0
 y = np.array(y)
 
+# Dividir datos en entrenamiento y prueba
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
-
-print("✅ Total de imágenes cargadas:", len(X))
-
-# Dividir datos (80% entrenamiento, 20% prueba)
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
-
-# Guardar datos procesados
+# Guardar los datos procesados
 np.save("data/processed/X_train.npy", X_train)
 np.save("data/processed/X_test.npy", X_test)
 np.save("data/processed/y_train.npy", y_train)
 np.save("data/processed/y_test.npy", y_test)
 
+print(f"✅ Total de imágenes cargadas: {len(X)}")
 print("✅ Datos guardados correctamente en data/processed/")

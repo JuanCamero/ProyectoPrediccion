@@ -9,23 +9,23 @@ import os
 import uuid
 import gdown
 import tensorflow as tf
-import gc  # 🧹 Para liberar memoria después de predicciones
+import gc  # 🧹 Para liberar memoria
 
 # 🔧 Forzar uso de CPU (Render fix)
 tf.config.set_visible_devices([], 'GPU')
 
 # --------------------------------------
-# 🔹 Configuración base de la aplicación
+# 🔹 Configuración base
 # --------------------------------------
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
 
 # --------------------------------------
-# 🔹 Configuración de base de datos
+# 🔹 Base de datos
 # --------------------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL",  # variable de entorno en Render
-    "postgresql://postgres:12345@localhost:5432/predicciondb"  # fallback local
+    "DATABASE_URL",
+    "postgresql://postgres:12345@localhost:5432/predicciondb"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -49,7 +49,7 @@ class Archivo(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
 
 # --------------------------------------
-# 🔹 Cargar modelo desde Google Drive
+# 🔹 Cargar modelo (Google Drive)
 # --------------------------------------
 MODEL_PATH = "models/modelo_tumor.h5"
 GOOGLE_DRIVE_ID = "1M1cg6rWagoNqJFl-0mFOzrazUCuU2PLz"
@@ -57,33 +57,35 @@ GDRIVE_URL = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_ID}"
 
 os.makedirs("models", exist_ok=True)
 
-# Descargar el modelo si no existe localmente
 if not os.path.exists(MODEL_PATH):
     print("📥 Descargando modelo desde Google Drive...")
     gdown.download(GDRIVE_URL, MODEL_PATH, quiet=False)
 
 # --------------------------------------
-# 🔹 Funciones de carga y predicción del modelo
+# 🔹 Carga y predicción del modelo
 # --------------------------------------
-_model = None  # Carga perezosa
+_model = None
+CATEGORIES = ["glioma", "meningioma", "notumor", "pituitary"]
 
 def cargar_modelo():
     global _model
     if _model is None:
-        print("⚙️ Cargando modelo en memoria...")
+        print("⚙️ Cargando modelo multiclase...")
         _model = load_model(MODEL_PATH)
         print("✅ Modelo cargado correctamente")
     return _model
 
 def predecir_imagen(ruta_imagen):
-    """Realiza predicción y libera memoria después"""
+    """Predice tipo de tumor entre 4 clases"""
     model = cargar_modelo()
     img = image.load_img(ruta_imagen, target_size=(150, 150))
     img_array = image.img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    pred = model.predict(img_array)[0][0]
-    resultado = "Tumor detectado" if pred > 0.5 else "No se detecta tumor"
+    pred = model.predict(img_array)[0]
+    clase_idx = np.argmax(pred)
+    confianza = float(np.max(pred) * 100)
+    resultado = f"{CATEGORIES[clase_idx]} ({confianza:.2f}%)"
 
     # 🧹 Liberar memoria
     tf.keras.backend.clear_session()
@@ -105,7 +107,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def index_root():
     return redirect(url_for('login'))
 
-# ------------------ LOGIN ------------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -120,7 +121,6 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
-# ------------------ REGISTRO ------------------
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
@@ -138,14 +138,12 @@ def registro():
         return redirect(url_for('login'))
     return render_template('register.html')
 
-# ------------------ LOGOUT ------------------
 @app.route('/logout')
 def logout():
     session.clear()
     flash('Sesión cerrada correctamente.')
     return redirect(url_for('login'))
 
-# ------------------ MENÚ ------------------
 @app.route('/menu')
 def menu():
     if 'usuario_id' not in session:
@@ -153,21 +151,18 @@ def menu():
     usuario = Usuario.query.get(session['usuario_id'])
     return render_template('menu.html', usuario=usuario)
 
-# ------------------ FASE 1 ------------------
 @app.route('/fase1')
 def fase1():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
     return render_template('fase1.html')
 
-# ------------------ FASE 2 ------------------
 @app.route('/fase2')
 def fase2():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
     return render_template('fase2.html')
 
-# ------------------ PANEL ------------------
 @app.route('/panel', methods=['GET', 'POST'])
 def panel():
     if 'usuario_id' not in session:
@@ -191,7 +186,7 @@ def panel():
         ruta = os.path.join(app.config['UPLOAD_FOLDER'], nombre_unico)
         archivo_subido.save(ruta)
 
-        # 🔍 Realizar predicción
+        # 🔍 Predicción
         if os.path.exists(MODEL_PATH):
             prediccion = predecir_imagen(ruta)
         else:
@@ -215,10 +210,11 @@ def panel():
                            prediccion=prediccion, image_path=imagen_path)
 
 # --------------------------------------
-# 🔹 Iniciar aplicación
+# 🔹 Iniciar app
 # --------------------------------------
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
 
