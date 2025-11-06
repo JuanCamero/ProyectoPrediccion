@@ -2,65 +2,106 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Principal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroDx • Diagnóstico Asistido</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        .resultado-tumor { color: red; font-weight: bold; }
-        .resultado-no-tumor { color: green; font-weight: bold; }
-        .file-list { list-style: none; padding: 0; }
-        .file-list li { margin-bottom: 8px; }
-        img { max-width: 300px; margin-top: 10px; }
-    </style>
 </head>
 <body>
-    <div class="navbar">
-        <h2>Bienvenido, {{ usuario.nombre }}</h2>
-        <a href="{{ url_for('logout') }}" class="logout-btn">Cerrar sesión</a>
+    <!-- Aviso médico elegante (fijo arriba) -->
+    <div class="disclaimer-bar">
+        <span>ℹ️</span>
+        <p>Esta herramienta es de <strong>apoyo diagnóstico</strong>. No sustituye la evaluación de un profesional médico.</p>
     </div>
 
-    <div class="content">
-        <h3>Sube tu archivo</h3>
-        <form action="{{ url_for('panel') }}" method="POST" enctype="multipart/form-data">
-            <input type="file" name="archivo" required>
-            <button type="submit">Subir</button>
-        </form>
+    <div class="app-layout">
+        <!-- Panel izquierdo: Acción principal -->
+        <aside class="control-panel">
+            <div class="logo">
+                <div class="logo-circle">🧠</div>
+                <h1>Panel de<span> Prediccion</span></h1>
+            </div>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert">{{ messages[0] }}</div>
+            <div class="user-card">
+                <div class="avatar">👨‍⚕️</div>
+                <div>
+                    <div class="role">Usuario:</div>
+                    <div class="name">{{ usuario.nombre }}</div>
+                </div>
+            </div>
+
+            <!-- Sección de subida (destacada) -->
+            <section class="upload-box">
+                <h2>📤 Sube tu imagen</h2>
+                <p>Resonancia o escaneo cerebral en JPG/PNG.</p>
+                <form action="{{ url_for('panel') }}" method="POST" enctype="multipart/form-data">
+                    <div class="file-input-area">
+                        <input type="file" id="archivo" name="archivo" accept="image/*" required>
+                        <label for="archivo" class="file-button">Seleccionar archivo</label>
+                    </div>
+                    <button type="submit" class="btn-analyze">🔍 Analizar ahora</button>
+                </form>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flash-alert">{{ messages[0] }}</div>
+                    {% endif %}
+                {% endwith %}
+            </section>
+
+            <div class="nav-footer">
+                <a href="{{ url_for('menu') }}" class="back-link">← Volver al menú</a>
+                <a href="{{ url_for('logout') }}" class="logout-link">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Panel derecho: Resultado + Historial -->
+        <main class="results-panel">
+            <!-- Resultado (si existe) -->
+            {% if prediccion %}
+            <div class="result-card {{ 'positive' if prediccion == 'Tumor detectado' else 'negative' }}">
+                <div class="result-header">
+                    <h2>📊 Resultado del análisis</h2>
+                    <span class="status-indicator {{ 'alert' if prediccion == 'Tumor detectado' else 'safe' }}"></span>
+                </div>
+                <div class="result-content">
+                    <div class="result-text">{{ prediccion }}</div>
+                    {% if image_path %}
+                    <div class="image-frame">
+                        <img src="{{ image_path }}" alt="Imagen analizada">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
             {% endif %}
-        {% endwith %}
 
-        {% if prediccion %}
-            <h3>Resultado de la predicción</h3>
-            <p class="{{ 'resultado-tumor' if prediccion=='Tumor detectado' else 'resultado-no-tumor' }}">
-                {{ prediccion }}
-            </p>
-            {% if image_path %}
-                <img src="{{ image_path }}" alt="Imagen subida">
-            {% endif %}
-        {% endif %}
-
-        <h3>Historial de archivos</h3>
-        {% if archivos %}
-            <ul class="file-list">
-                {% for archivo in archivos %}
-                    <li>
-                        <strong>{{ archivo.nombre_archivo }}</strong>
-                        subido por <strong>{{ archivo.usuario.nombre }}</strong>
-                        el {{ archivo.fecha_subida.strftime('%d/%m/%Y %H:%M') }}
-                        - <strong>{{ archivo.prediccion }}</strong>
-                        - <a href="{{ url_for('static', filename='uploads/' + archivo.nombre_archivo) }}" target="_blank">Ver</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay archivos subidos todavía.</p>
-        {% endif %}
-
-        <div style="margin-top: 20px;">
-    <a href="{{ url_for('menu') }}" class="menu-btn">⬅ Volver al menú</a>
-</div>
+            <!-- Historial -->
+            <section class="history-section">
+                <div class="section-header">
+                    <h2>🗄️ Historial de análisis</h2>
+                    <span class="counter">{{ archivos|length if archivos else 0 }}</span>
+                </div>
+                <div class="history-list">
+                    {% if archivos %}
+                        {% for archivo in archivos %}
+                        <div class="history-item {{ 'risk' if archivo.prediccion == 'Tumor detectado' else 'clear' }}">
+                            <div class="item-icon">{{ '🔴' if archivo.prediccion == 'Tumor detectado' else '🟢' }}</div>
+                            <div class="item-details">
+                                <div class="filename">{{ archivo.nombre_archivo }}</div>
+                                <div class="metadata">
+                                    {{ archivo.fecha_subida.strftime('%d/%m/%Y · %H:%M') }} • {{ archivo.usuario.nombre }}
+                                </div>
+                            </div>
+                            <a href="{{ url_for('static', filename='uploads/' + archivo.nombre_archivo) }}" target="_blank" class="eye-link">👁️</a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No hay análisis previos.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        </main>
     </div>
 </body>
 </html>

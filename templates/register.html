@@ -2,24 +2,53 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
 </head>
 <body>
-    <div class="register-container">
-        <h2>Crear cuenta</h2>
-        <form method="POST">
-            <input type="text" name="nombre" placeholder="Nombre completo" required>
-            <input type="email" name="correo" placeholder="Correo electrónico" required>
-            <input type="password" name="contraseña" placeholder="Contraseña" required>
-            <button type="submit">Registrarse</button>
-        </form>
-        <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a></p>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert">{{ messages[0] }}</div>
-            {% endif %}
-        {% endwith %}
+    <div class="register-wrapper">
+        <!-- PANEL IZQUIERDO - IMAGEN -->
+        <div class="image-panel">
+            <div class="image-overlay">
+                <img src="{{ url_for('static', filename='imagenes/cerebro.jpg') }}" alt="Sistema Médico Digital">
+            </div>
+        </div>
+
+        <!-- PANEL DERECHO - FORMULARIO DE REGISTRO -->
+        <div class="form-panel">
+            <h2>Crear cuenta</h2>
+
+            <div class="avatar-container">
+                <div class="avatar">
+                    <img src="{{ url_for('static', filename='imagenes/avatar-mujer.png') }}" alt="Usuario mujer">
+                </div>
+                <div class="avatar">
+                    <img src="{{ url_for('static', filename='imagenes/avatar-hombre.png') }}" alt="Usuario hombre">
+                </div>
+            </div>
+
+            <form method="POST">
+                <input type="text" name="nombre" placeholder="Nombre completo" required>
+                <input type="email" name="correo" placeholder="Correo electrónico" required>
+                <input type="password" name="contraseña" placeholder="Contraseña" required>
+                <button type="submit">Registrarse</button>
+            </form>
+
+            <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a></p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="footer">
+                © 2024 Sistema Médico Digital | 
+                <a href="#">Política de Privacidad</a> | 
+                <a href="#">Soporte</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
