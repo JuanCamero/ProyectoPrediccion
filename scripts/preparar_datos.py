@@ -45,5 +45,5 @@ np.save("data/processed/X_test.npy", X_test)
 np.save("data/processed/y_train.npy", y_train)
 np.save("data/processed/y_test.npy", y_test)
 
-print(f"✅ Total de imágenes cargadas: {len(X)}")
-print("✅ Datos guardados correctamente en data/processed/")
+print(f"Total de imágenes cargadas: {len(X)}")
+print("Datos guardados correctamente en data/processed/")

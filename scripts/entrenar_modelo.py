@@ -21,7 +21,7 @@ model = Sequential([
     Flatten(),
     Dense(128, activation='relu'),
     Dropout(0.5),
-    Dense(4, activation='softmax')  # 🔥 Multiclase
+    Dense(4, activation='softmax')  # Multiclase
 ])
 
 # Compilar el modelo
@@ -34,7 +34,7 @@ history = model.fit(X_train, y_train, epochs=15, validation_split=0.2)
 
 # Evaluar el modelo
 loss, acc = model.evaluate(X_test, y_test)
-print(f"✅ Precisión del modelo: {acc:.2f}")
+print(f"Precisión del modelo: {acc:.2f}")
 
 # Crear carpeta de salida si no existe
 os.makedirs("models", exist_ok=True)
@@ -42,4 +42,4 @@ os.makedirs("models", exist_ok=True)
 # Guardar el modelo entrenado
 model.save("models/modelo_tumor.h5")
 
-print("✅ Modelo multiclase entrenado y guardado correctamente en models/modelo_tumor.h5")
+print("Modelo multiclase entrenado y guardado correctamente en models/modelo_tumor.h5")

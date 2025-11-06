@@ -9,19 +9,19 @@ import os
 import uuid
 import gdown
 import tensorflow as tf
-import gc  # 🧹 Para liberar memoria
+import gc  #  Para liberar memoria
 
-# 🔧 Forzar uso de CPU (Render fix)
+#  Forzar uso de CPU (Render fix)
 tf.config.set_visible_devices([], 'GPU')
 
 # --------------------------------------
-# 🔹 Configuración base
+#  Configuración base
 # --------------------------------------
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_segura'
 
 # --------------------------------------
-# 🔹 Base de datos
+#  Base de datos
 # --------------------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL",
@@ -31,7 +31,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # --------------------------------------
-# 🔹 Modelos de base de datos
+#  Modelos de base de datos
 # --------------------------------------
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -49,17 +49,17 @@ class Archivo(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
 
 # --------------------------------------
-# 🔹 Cargar modelo (Google Drive actualizado)
+#  Cargar modelo (Google Drive actualizado)
 # --------------------------------------
 MODEL_PATH = "models/modelo_tumor.h5"
 
-# 🆕 Nuevo ID de tu modelo en Google Drive
+# Nuevo ID de tu modelo en Google Drive
 GOOGLE_DRIVE_ID = "1z1dYPd8cCyBDZkZEwAcdRnHdcB9gLM7j"
 GDRIVE_URL = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_ID}"
 
 os.makedirs("models", exist_ok=True)
 
-# ✅ Forzar descarga si no existe o el archivo está corrupto
+#  Forzar descarga si no existe o el archivo está corrupto
 if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 10000:
     print("📥 Descargando modelo actualizado desde Google Drive...")
     try:
@@ -69,7 +69,7 @@ if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 10000:
         print(f"⚠️ Error al descargar modelo: {e}")
 
 # --------------------------------------
-# 🔹 Carga y predicción del modelo
+#  Carga y predicción del modelo
 # --------------------------------------
 _model = None
 CATEGORIES = ["glioma", "meningioma", "notumor", "pituitary"]
@@ -104,14 +104,14 @@ def predecir_imagen(ruta_imagen):
     return resultado
 
 # --------------------------------------
-# 🔹 Configuración de archivos subidos
+# Configuración de archivos subidos
 # --------------------------------------
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # --------------------------------------
-# 🔹 Rutas
+#  Rutas
 # --------------------------------------
 @app.route('/')
 def index_root():
@@ -220,7 +220,7 @@ def panel():
                            prediccion=prediccion, image_path=imagen_path)
 
 # --------------------------------------
-# 🔹 Iniciar app
+#  Iniciar app
 # --------------------------------------
 if __name__ == '__main__':
     with app.app_context():
